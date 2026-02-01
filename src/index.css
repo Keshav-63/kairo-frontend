@@ -1,0 +1,105 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+/* In your globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
+
+/* ... your other tailwind base styles ... */
+@layer base {
+  :root {
+    --background: 8 8 12;
+    --foreground: 250 250 250;
+    --card: 15 15 20;
+    --card-foreground: 250 250 250;
+    --popover: 15 15 20;
+    --popover-foreground: 250 250 250;
+    --primary: 99 102 241;
+    --primary-foreground: 255 255 255;
+    --secondary: 39 39 42;
+    --secondary-foreground: 250 250 250;
+    --muted: 39 39 42;
+    --muted-foreground: 161 161 170;
+    --accent: 16 185 129;
+    --accent-foreground: 255 255 255;
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+    --border: 39 39 42;
+    --input: 39 39 42;
+    --ring: 99 102 241;
+    --radius: 0.5rem;
+  }
+}
+
+* {
+  border-color: rgb(var(--border));
+}
+
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+input,
+textarea,
+select {
+  /* Only target the main form field box here */
+  color: rgb(var(--foreground)) !important;
+  background-color: rgba(var(--input), 0.8) !important;
+}
+
+option {
+  /* Target the dropdown options list specifically to ensure dark background */
+  color: rgb(var(--foreground)) !important;
+  background-color: rgb(var(--card)) !important;
+}
+
+input::placeholder {
+  color: rgb(var(--muted-foreground));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--muted));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--muted-foreground));
+}
+
+/* Smooth animations */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Gradient text effect */
+/* .gradient-text {
+  background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+} */
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 0 0 35px rgba(99, 102, 241, 0.5);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Backdrop blur */
+.backdrop-blur-glass {
+  backdrop-filter: blur(12px);
+  background: rgba(var(--card), 0.8);
+}
