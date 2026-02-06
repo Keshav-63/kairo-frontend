@@ -338,7 +338,7 @@ const VoiceEnrollment = () => {
 
   const bentoProps = useMemo(() => ({
     enableTilt: false,
-    enableMagnetism: true,
+    enableMagnetism: false,
     clickEffect: true,
     glowColor: glowColor,
     particleCount: 12,

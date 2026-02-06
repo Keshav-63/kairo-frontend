@@ -1,3 +1,6 @@
+
+
+
 // Kairo/src/pages/Profile.jsx
 
 "use client"
@@ -267,22 +270,22 @@ const Profile = ({ user }) => {
     {
       label: "Queries Asked",
       value: JSON.parse(localStorage.getItem("kairo_query_history") || "[]").length,
-      icon: "町",
+      icon: "💬",
     },
     {
       label: "Voices Enrolled",
       value: JSON.parse(localStorage.getItem("kairo_enrolled_voices") || "[]").length,
-      icon: "痔",
+      icon: "🎤",
     },
     {
       label: "Days Active",
       value: Math.floor((Date.now() - new Date(user?.joinedAt || Date.now()).getTime()) / (1000 * 60 * 60 * 24)),
-      icon: "套",
+      icon: "📅",
     },
     {
       label: "Storage Used",
       value: "2.4 GB",
-      icon: "沈",
+      icon: "💾",
     },
   ]
   
@@ -293,8 +296,8 @@ const Profile = ({ user }) => {
   const spotlightRadius = DEFAULT_SPOTLIGHT_RADIUS;
   
   const bentoProps = useMemo(() => ({
-    enableTilt: false, // *** CHANGED: Tilt disabled here ***
-    enableMagnetism: true,
+    enableTilt: false,
+    enableMagnetism: false,
     clickEffect: true,
     glowColor: glowColor,
     particleCount: 12,
