@@ -11,7 +11,7 @@ const useAuthStore = create((set) => ({
   checkAuth: async () => {
     set({ loading: true });
     try {
-      const { data } = await api.get('http://localhost:3001/api/auth/me');
+      const { data } = await api.get('https://shreeyanshsingh-raghuvanshi-kairob.hf.space/api/auth/me');
       set({ user: data, isAuthenticated: true, loading: false });
     } catch (error) {
       console.error('Not authenticated:', error);
@@ -21,7 +21,7 @@ const useAuthStore = create((set) => ({
 
   logout: async () => {
     try {
-      await api.post('http://localhost:3001/api/auth/logout');
+      await api.post('https://shreeyanshsingh-raghuvanshi-kairob.hf.space/api/auth/logout');
       set({ user: null, isAuthenticated: false });
       toast.success('Logged out successfully!');
     } catch (error) {

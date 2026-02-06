@@ -3,7 +3,7 @@ import React from 'react';
 const AuthPage = () => {
   const handleGoogleLogin = () => {
     // Redirect to the backend OAuth route
-    window.location.href = 'http://localhost:3001/api/auth/web/google';
+    window.location.href = 'https://shreeyanshsingh-raghuvanshi-kairob.hf.space/api/auth/web/google';
   };
 
   return (

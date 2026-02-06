@@ -4,6 +4,24 @@
 // calculateSpotlightValues, updateCardGlowProperties, useMobileDetection, GlobalSpotlight
 // Ensure GlobalSpotlight targets '.particle-card' within the pageRef)
 
+"use client";
+
+import { useState, useEffect, useMemo, useRef } from "react";
+import toast from "react-hot-toast";
+import useAuthStore from "../stores/authStore";
+import { getTasks, completeTask } from "../api/axios";
+import { ParticleCard } from "../components/ParticleCard";
+import { gsap } from "gsap";
+import {
+  Calendar,
+  List,
+  CheckCircle,
+  BrainCircuit,
+  AlertTriangle,
+} from "lucide-react";
+import { Search, Smile, AlertCircle, FolderSearch, ChevronDown } from "lucide-react";
+import api from "../api/axios";
+
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
 const DEFAULT_GLOW_COLOR = '132, 0, 255'; // Purple glow for memories
 const MOBILE_BREAKPOINT = 768;
@@ -275,7 +293,7 @@ const Memories = () => {
       if (isMounted) setLoading(true);
       try {
         const response = await api.get(
-          `http://localhost:8000/memories/user/${user.googleId}`
+          `https://keshavsuthar-kairo-api.hf.space/memories/user/${user.googleId}`
         );
          if (!isMounted) return;
 
