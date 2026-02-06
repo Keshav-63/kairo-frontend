@@ -5,13 +5,13 @@ import { toast } from "react-hot-toast";
 
 // This instance is for your OAuth and user management API
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', 
+  baseURL: 'https://shreeyanshsingh-raghuvanshi-kairob.hf.space/api', 
   withCredentials: true,
 });
 
 // This new instance is specifically for the Python Kairo pipeline
 export const pipelineApi = axios.create({
-  baseURL: 'http://localhost:8000', 
+  baseURL: 'https://keshavsuthar-kairo-api.hf.space', 
 });
 
 // Apply interceptors to both instances if they share the same auth token logic
