@@ -323,8 +323,8 @@ const Memories = () => {
 
   // --- Bento Props ---
   const bentoProps = useMemo(() => ({
-    enableTilt: !isMobile,
-    enableMagnetism: !isMobile,
+    enableTilt: false,
+    enableMagnetism: false,
     clickEffect: true,
     glowColor: DEFAULT_GLOW_COLOR, // Use defined color
     particleCount: 8,

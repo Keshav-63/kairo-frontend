@@ -296,8 +296,8 @@ const Profile = ({ user }) => {
   const spotlightRadius = DEFAULT_SPOTLIGHT_RADIUS;
   
   const bentoProps = useMemo(() => ({
-    enableTilt: true,
-    enableMagnetism: true,
+    enableTilt: false,
+    enableMagnetism: false,
     clickEffect: true,
     glowColor: glowColor,
     particleCount: 12,

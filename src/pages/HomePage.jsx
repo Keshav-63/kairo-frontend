@@ -223,8 +223,8 @@ const HomePage = () => {
 
   // --- Bento Props for ParticleCard ---
     const bentoProps = useMemo(() => ({
-      enableTilt: !isMobile,
-      enableMagnetism: !isMobile,
+      enableTilt: false,
+      enableMagnetism: false,
       clickEffect: true,
       glowColor: glowColor,
       particleCount: 8, 
