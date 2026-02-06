@@ -253,7 +253,7 @@ export const ParticleCard = ({
 
   return (
     <div
-      ref={arcardRef}
+      ref={cardRef} 
       className={`${className} relative overflow-hidden`}
       style={{ ...style, position: 'relative', overflow: 'hidden' }}
     >
