@@ -132,7 +132,7 @@ const KairoPlus = () => {
 
   const isMobile = useMobileDetection();
   const bentoProps = useMemo(() => ({
-    enableTilt: !isMobile,
+    enableTilt: false,
     enableMagnetism: !isMobile,
     clickEffect: true,
     glowColor: DEFAULT_GLOW_COLOR,

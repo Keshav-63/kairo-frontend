@@ -223,7 +223,7 @@ const HomePage = () => {
 
   // --- Bento Props for ParticleCard ---
     const bentoProps = useMemo(() => ({
-      enableTilt: !isMobile,
+      enableTilt: false, // *** CHANGED: Tilt disabled here ***
       enableMagnetism: !isMobile,
       clickEffect: true,
       glowColor: glowColor,

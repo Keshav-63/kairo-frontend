@@ -1,3 +1,4 @@
+
 // Kairo/src/components/ParticleCard.jsx
 
 import { useRef, useEffect, useCallback } from 'react';
@@ -31,7 +32,7 @@ export const ParticleCard = ({
   style,
   particleCount = DEFAULT_PARTICLE_COUNT,
   glowColor = DEFAULT_GLOW_COLOR,
-  enableTilt = true,
+  enableTilt = false, // *** CHANGED: Default is now false ***
   clickEffect = false,
   enableMagnetism = false
 }) => {
@@ -252,11 +253,11 @@ export const ParticleCard = ({
 
   return (
     <div
-      ref={cardRef}
+      ref={arcardRef}
       className={`${className} relative overflow-hidden`}
       style={{ ...style, position: 'relative', overflow: 'hidden' }}
     >
       {children}
     </div>
   );
-};
+};//k
