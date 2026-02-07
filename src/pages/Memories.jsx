@@ -158,6 +158,8 @@ const GlobalSpotlight = ({
 
 // --- Memory Detail Modal Component (Keep existing) ---
 const MemoryDetailModal = ({ memory, onClose }) => {
+  const [showTranscript, setShowTranscript] = useState(false);
+
   if (!memory) return null;
 
   const getSentimentIcon = (sentimentLabel) => {
@@ -207,6 +209,14 @@ const MemoryDetailModal = ({ memory, onClose }) => {
             <p className="text-foreground/90 leading-relaxed">{memory.summary}</p>
           </div>
 
+          {/* Minutes of Meeting (MoM) */}
+          {memory.mom && (
+            <div>
+              <h3 className="font-semibold text-lg mb-2 text-primary">Minutes of Meeting</h3>
+              <p className="text-foreground/90 leading-relaxed">{memory.mom}</p>
+            </div>
+          )}
+
           {/* Sentiment */}
           {memory.sentiment && (
             <div>
@@ -233,12 +243,14 @@ const MemoryDetailModal = ({ memory, onClose }) => {
             </div>
           )}
 
-          {/* Key Points */}
-          {memory.key_points && memory.key_points.length > 0 && (
+          {/* Key Points / Key Takeaways */}
+          {((memory.key_points && memory.key_points.length > 0) || (memory.key_takeaways && memory.key_takeaways.length > 0)) && (
             <div>
-              <h3 className="font-semibold text-lg mb-2 text-primary">Key Points</h3>
+              <h3 className="font-semibold text-lg mb-2 text-primary">
+                {memory.key_takeaways ? 'Key Takeaways' : 'Key Points'}
+              </h3>
               <ul className="list-disc list-inside space-y-1.5 text-foreground/90 pl-2">
-                {memory.key_points.map((point, index) => (
+                {(memory.key_takeaways || memory.key_points).map((point, index) => (
                   <li key={index}>{point}</li>
                 ))}
               </ul>
@@ -259,6 +271,43 @@ const MemoryDetailModal = ({ memory, onClose }) => {
                   </blockquote>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Full Transcript Section */}
+          {memory.full_transcription && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-lg text-primary">Full Transcript</h3>
+                <button
+                  onClick={() => setShowTranscript(!showTranscript)}
+                  className="px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-md transition-colors flex items-center gap-2"
+                >
+                  {showTranscript ? (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                      Hide Transcript
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      Show Transcript
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {showTranscript && (
+                <div className="bg-card/50 p-4 rounded-lg border border-border/50 max-h-96 overflow-y-auto">
+                  <div className="text-foreground/90 leading-relaxed space-y-3 text-sm">
+                    {memory.full_transcription.split('\n').map((line, index) => (
+                      <p key={index} className="font-mono">
+                        {line || '\u00A0'}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -324,7 +373,9 @@ const Memories = () => {
       const searchMatch = !searchTerm ||
         memory.title?.toLowerCase().includes(searchLower) ||
         memory.summary?.toLowerCase().includes(searchLower) ||
+        memory.mom?.toLowerCase().includes(searchLower) ||
         memory.key_points?.some(p => p.toLowerCase().includes(searchLower)) ||
+        memory.key_takeaways?.some(p => p.toLowerCase().includes(searchLower)) ||
         memory.action_items?.some(a => a.toLowerCase().includes(searchLower)) ||
         memory.key_quotes?.some(q => q.quote.toLowerCase().includes(searchLower));
 
