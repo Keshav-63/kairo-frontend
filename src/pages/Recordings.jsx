@@ -152,7 +152,7 @@ const Recordings = () => {
         setCurrentlyPlaying(recordingId);
         
         // Construct the URL to your backend's streaming endpoint
-        const audioUrl = `http://localhost:8000/audio/${recording.sessionId}?user_id=${user.googleId}`;
+        const audioUrl = `https://keshavsuthar-kairo-api.hf.space/audio/${recording.sessionId}?user_id=${user.googleId}`;
         
         // If an audio element for this ID doesn't exist, create it
         if (!audioRefs.current[recordingId]) {
@@ -193,7 +193,7 @@ const Recordings = () => {
         toast.error("You must be logged in to download recordings.");
         return;
     }
-    const audioUrl = `http://localhost:8000/audio/${recording.sessionId}?user_id=${user.googleId}`;
+    const audioUrl = `https://keshavsuthar-kairo-api.hf.space/audio/${recording.sessionId}?user_id=${user.googleId}`;
     const link = document.createElement('a');
     link.href = audioUrl;
     link.download = `${recording.title.replace(/ /g, '_')}.wav`;
