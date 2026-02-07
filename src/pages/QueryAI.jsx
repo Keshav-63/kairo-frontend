@@ -17,6 +17,7 @@ import useAuthStore from "../stores/authStore";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight"; // You might need to install this: npm install rehype-highlight
+import { useKairoStream } from "../hooks/useKairoStream";
 
 // --- START MAGIC BENTO EFFECTS UTILITY CODE ---
 // (Keep your existing Magic Bento code here - it's omitted for brevity)
@@ -205,6 +206,19 @@ const QueryAI = () => {
   const glowColor = DEFAULT_GLOW_COLOR; // *** DEFINE glowColor HERE ***
   const spotlightRadius = DEFAULT_SPOTLIGHT_RADIUS; // *** DEFINE spotlightRadius HERE ***
 
+  // SSE Streaming hook
+  const {
+    isStreaming,
+    answer: streamingAnswer,
+    sources: streamingSources,
+    error: streamingError,
+    streamQuery,
+    cancelStream
+  } = useKairoStream(pipelineApi.defaults.baseURL);
+
+  // Track which message is currently streaming
+  const streamingMessageIdRef = useRef(null);
+
 
   // --- useEffect Hooks ---
   useEffect(() => {
@@ -275,6 +289,44 @@ const QueryAI = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Update streaming message as tokens arrive
+  useEffect(() => {
+    if (isStreaming && streamingMessageIdRef.current && streamingAnswer) {
+      setMessages(prev => prev.map(msg =>
+        msg.id === streamingMessageIdRef.current
+          ? { ...msg, content: streamingAnswer }
+          : msg
+      ));
+    }
+  }, [streamingAnswer, isStreaming]);
+
+  // Handle streaming completion
+  useEffect(() => {
+    if (!isStreaming && streamingMessageIdRef.current && streamingAnswer) {
+      setMessages(prev => prev.map(msg =>
+        msg.id === streamingMessageIdRef.current
+          ? { ...msg, content: streamingAnswer, contexts: streamingSources, isStreaming: false }
+          : msg
+      ));
+      streamingMessageIdRef.current = null;
+    }
+  }, [isStreaming, streamingAnswer, streamingSources]);
+
+  // Handle streaming errors
+  useEffect(() => {
+    if (streamingError) {
+      toast.error(streamingError);
+      if (streamingMessageIdRef.current) {
+        setMessages(prev => prev.map(msg =>
+          msg.id === streamingMessageIdRef.current
+            ? { ...msg, content: `Sorry, something went wrong. ${streamingError}`, isStreaming: false }
+            : msg
+        ));
+        streamingMessageIdRef.current = null;
+      }
+    }
+  }, [streamingError]);
 
   // --- Helper Functions ---
 
@@ -402,8 +454,6 @@ const QueryAI = () => {
     // --- End session creation ---
 
     setShowSuggestions(false);
-    // *** Keep the user's query in the input for now ***
-    // setQuery(""); // Commented out to keep the query visible
 
     // *** Add user message to state IMMEDIATELY ***
     const userMessage = {
@@ -416,26 +466,21 @@ const QueryAI = () => {
     // *** Clear the input AFTER adding the message to state ***
     setQuery("");
 
-    setIsLoading(true); // Now loading for the query response
+    // Create placeholder AI message for streaming
+    const streamingMsgId = Date.now() + 1;
+    streamingMessageIdRef.current = streamingMsgId;
+
+    setMessages((prev) => [...prev, {
+      id: streamingMsgId,
+      type: "ai",
+      content: "",
+      timestamp: new Date().toISOString(),
+      isStreaming: true
+    }]);
 
     try {
-      const data = {
-        user_id: user.googleId,
-        query: currentQuery, // Use the captured currentQuery
-        session_id: currentSessionId, // Use the definite session ID
-      };
-
-      const response = await pipelineApi.post("/query", data);
-
-      const aiResponse = {
-        id: Date.now() + 1,
-        type: "ai",
-        content: response.data.answer,
-        contexts: response.data.contexts,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, aiResponse]);
+      // Start streaming
+      await streamQuery(currentQuery, user.googleId, currentSessionId);
 
       // Generate title only if it was the first user message in this session
       if (isFirstUserMsgInSession) {
@@ -450,17 +495,19 @@ const QueryAI = () => {
 
     } catch (error) {
       console.error("Error querying pipeline:", error);
-      const errorMessage = error.response?.data?.error || "An error occurred.";
+      const errorMessage = error.response?.data?.error || error.message || "An error occurred.";
       toast.error(errorMessage);
-      const errorResponse = {
-        id: Date.now() + 1,
-        type: "ai",
-        content: `Sorry, something went wrong. ${errorMessage}`,
-        timestamp: new Date().toISOString(),
-      };
-       setMessages((prev) => [...prev, errorResponse]);
+
+      // Update the streaming message with error
+      if (streamingMessageIdRef.current) {
+        setMessages((prev) => prev.map(msg =>
+          msg.id === streamingMessageIdRef.current
+            ? { ...msg, content: `Sorry, something went wrong. ${errorMessage}`, isStreaming: false }
+            : msg
+        ));
+        streamingMessageIdRef.current = null;
+      }
     } finally {
-      setIsLoading(false);
        inputRef.current?.focus();
     }
   };
@@ -609,8 +656,8 @@ const QueryAI = () => {
           {/* Messages Area */}
         <div className="flex-grow overflow-y-auto p-6 space-y-4 message-list">
           
-          {/* MODIFIED: Show full-page spinner ONLY if loading AND messages are empty */}
-          {isLoading && messages.length === 0 && (
+          {/* Show full-page spinner ONLY if loading/streaming AND messages are empty */}
+          {(isLoading || isStreaming) && messages.length === 0 && (
             <div className="flex justify-center items-center h-full">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
             </div>
@@ -670,7 +717,7 @@ const QueryAI = () => {
           ))}
 
           {/* Suggestions - Conditionally render WITHIN the scrollable area */}
-          {showSuggestions && !isLoading && ( // Also hide suggestions when loading
+          {showSuggestions && !isLoading && !isStreaming && ( // Also hide suggestions when loading/streaming
             <div className="mb-6 pt-4 border-t border-border/20">
               <h3 className="text-base font-semibold mb-3 text-foreground text-center">
                 Suggested Queries
@@ -708,17 +755,17 @@ const QueryAI = () => {
             </div>
           )}
 
-          {/* This "thinking" indicator will now correctly show up AFTER the messages */}
-          {isLoading && messages.length > 0 && ( // Show inline loading only if messages already exist
+          {/* This "thinking" indicator will show up AFTER the messages during loading/streaming */}
+          {(isLoading || isStreaming) && messages.length > 0 && messages[messages.length - 1]?.type !== 'ai' && (
             <div className="flex justify-start animate-fadeIn py-2">
-              <div className="bg-muted text-muted-foreground px-4 py-3 rounded-2xl mr-4 inline-flex"> {/* Use inline-flex */}
+              <div className="bg-muted text-muted-foreground px-4 py-3 rounded-2xl mr-4 inline-flex">
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
                     <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
                   </div>
-                  <span className="text-sm">Kairo is thinking...</span>
+                  <span className="text-sm">{isStreaming ? 'Kairo is streaming...' : 'Kairo is thinking...'}</span>
                 </div>
               </div>
             </div>
@@ -738,13 +785,13 @@ const QueryAI = () => {
                   placeholder="Ask Kairo anything..."
                    className="w-full pl-4 pr-12 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors resize-none text-base leading-tight min-h-[40px] max-h-32" // Added leading-tight, min/max height
                    rows={1}
-                   disabled={isLoading}
+                   disabled={isLoading || isStreaming}
                    style={{ scrollbarWidth: 'thin' }} // For Firefox scrollbar styling
                 />
                  {/* Submit button positioned absolutely inside the input wrapper */}
                  <button
                    type="submit"
-                   disabled={!query.trim() || isLoading}
+                   disabled={!query.trim() || isLoading || isStreaming}
                    className="absolute right-2 bottom-1.5 p-1.5 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground text-primary-foreground rounded-md transition-colors glow-primary disabled:opacity-50 disabled:glow-none flex items-center justify-center" // Positioned button
                  >
                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
