@@ -410,7 +410,7 @@ const History = () => {
                       <div>
                         <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 5.523-4.477 10-10 10S1 17.523 1 12 5.477 2 11 2s10 4.477 10 10z"></path></svg>
                         <h3 className="text-xl font-semibold">No chats yet</h3>
-                        <p>Start a conversation in Query AI!</p>
+                        <p>Start a conversation in Ask Kairo!</p>
                       </div>
                     )}
                     {/* Added a case for when initial chat list is loading */}

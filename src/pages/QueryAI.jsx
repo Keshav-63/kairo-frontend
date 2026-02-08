@@ -602,7 +602,7 @@ const QueryAI = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <div>
-            <h1 className="text-3xl font-bold gradient-text mb-1">Kairo AI</h1>
+            <h1 className="text-3xl font-bold gradient-text mb-1">Ask Kairo</h1>
             <p className="text-muted-foreground text-sm">
               Ask Kairo anything about your memories and conversations
             </p>

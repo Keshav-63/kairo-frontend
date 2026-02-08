@@ -194,7 +194,7 @@ const Sidebar = ({ user, isCollapsed, setIsCollapsed }) => {
   // 1. Add "Memories" to the menu items array
   const menuItems = [
     { path: "/", icon: "home", label: "Home" },
-    { path: "/query", icon: "search", label: "Query AI" },
+    { path: "/query", icon: "search", label: "Ask Kairo" },
     { path: "/memories", icon: "brain", label: "Memories" }, // New item
     { path: "/kairo-plus", icon: "chart", label: "Kairo Plus" }, 
     { path: "/tasks", icon: "check", label: "Tasks" },
