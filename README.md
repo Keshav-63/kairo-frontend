@@ -59,33 +59,4 @@ You need [Node.js](https://nodejs.org/) (version 18 or newer recommended) and np
 
 ***
 
-## 📂 Project Structure
-
-````
-
-Kairo/
-├── public/
-├── src/
-│   ├── components/
-│   │   ├── AuthPage.jsx          \# Login/Signup Component
-│   │   ├── Sidebar.jsx           \# Main Navigation (Gray Theme)
-│   │   ├── Orb.jsx               \# WebGL Orb Component (Homepage)
-│   │   ├── ParticleCard.jsx      \# Core interactive wrapper for bento effects
-│   │   └── MagicBento.jsx        \# Main Logic for interactive cards/spotlight
-│   │
-│   ├── pages/
-│   │   ├── HomePage.jsx          \# Landing page with WebGL Orb background
-│   │   ├── QueryAI.jsx           \# Interactive chat interface
-│   │   ├── History.jsx           \# Query history list with interactive elements
-│   │   ├── Recordings.jsx        \# Recordings management page
-│   │   ├── VoiceEnrollment.jsx   \# Multi-step enrollment process
-│   │   └── Profile.jsx           \# User settings and data management
-│   │
-│   ├── App.jsx                   \# Main Router and Layout (handles sidebar state)
-│   ├── App.css                   \# Custom global animations and responsive fixes
-│   └── index.css                 \# Base Tailwind imports and theme overrides (critical for dark mode form visibility)
-│
-├── index.html
-├── package.json
-└── tailwind.config.js
 
